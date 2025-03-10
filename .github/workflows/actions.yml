@@ -16,6 +16,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo dpkg --add-architecture i386
           sudo apt update
           sudo apt install -y \
             build-essential \
@@ -26,7 +27,6 @@ jobs:
             flex \
             bison \
             libx11-dev \
-            libwayland-bin \
             libxext-dev \
             libxrandr-dev \
             libxi-dev \
@@ -66,7 +66,14 @@ jobs:
             libkrb5-dev \
             libldap2-dev \
             libgettextpo-dev \
-            gettext
+            gettext \
+            libwayland-bin \
+            gcc-multilib \
+            g++-multilib \
+            libc6-dev-i386 \
+            libx11-dev:i386 \
+            libfreetype6-dev:i386 \
+            libncurses5-dev:i386
 
       - name: Clone Wine repository (affinity-photo2-wine10.3 branch)
         run: |
