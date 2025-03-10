@@ -1,0 +1,97 @@
+name: Build WoW64 Wine Only
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt update
+          sudo apt install -y \
+            build-essential \
+            gcc \
+            g++ \
+            make \
+            cmake \
+            flex \
+            bison \
+            libx11-dev \
+            libxext-dev \
+            libxrandr-dev \
+            libxi-dev \
+            libxcursor-dev \
+            libxinerama-dev \
+            libxkbcommon-dev \
+            libxdamage-dev \
+            libxcomposite-dev \
+            libxshmfence-dev \
+            libgl1-mesa-dev \
+            libvulkan-dev \
+            libpng-dev \
+            libjpeg-dev \
+            libfreetype6-dev \
+            libgnutls28-dev \
+            libncurses5-dev \
+            libxml2-dev \
+            libxslt1-dev \
+            libudev-dev \
+            libasound2-dev \
+            libpulse-dev \
+            libdbus-1-dev \
+            libfontconfig1-dev \
+            liblcms2-dev \
+            libgsm1-dev \
+            libjpeg8-dev \
+            libtiff5-dev \
+            libmpg123-dev \
+            libgphoto2-dev \
+            libpcap-dev \
+            libopenal-dev \
+            libv4l-dev \
+            libgstreamer1.0-dev \
+            libgstreamer-plugins-base1.0-dev \
+            libcapi20-dev \
+            libcups2-dev \
+            libkrb5-dev \
+            libldap2-dev \
+            libgettextpo-dev \
+            gettext \
+            libwayland-bin \
+            gcc-multilib \
+            g++-multilib \
+            libc6-dev-i386 \
+            libx11-dev:i386 \
+            libfreetype6-dev:i386 \
+            libncurses5-dev:i386
+
+      - name: Clone Wine repository (affinity-photo2-wine10.3 branch)
+        run: |
+          git clone --branch affinity-photo2-wine10.3 --single-branch https://gitlab.winehq.org/ElementalWarrior/wine.git
+
+      - name: Build WoW64 Wine
+        run: |
+          cd wine
+          mkdir -p build64 && cd build64
+          ../configure --enable-win64
+          make -j$(nproc)
+          cd ..
+          mkdir -p build32 && cd build32
+          PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --with-wine64=../build64
+          make -j$(nproc)
+
+      - name: Upload WoW64 Wine build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wine-wow64-build
+          path: wine
