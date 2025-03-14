@@ -83,15 +83,11 @@ jobs:
         run: |
           cd wine
           mkdir -p build64 && cd build64
-          ../configure --enable-win64
-          make -j$(nproc)
-          cd ..
-          mkdir -p build32 && cd build32
-          PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --with-wine64=../build64
+          PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --enable-archs=x86_64
           make -j$(nproc)
 
       - name: Upload WoW64 Wine build artifact
         uses: actions/upload-artifact@v4
         with:
           name: wine-wow64-build
-          path: wine
+          path: wine/build64
