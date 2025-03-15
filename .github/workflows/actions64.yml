@@ -83,16 +83,17 @@ jobs:
         run: |
           cd wine
           mkdir -p build64 && cd build64
-          PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --enable-archs=x86_64
+          PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --enable-archs=x86_64 --with-wine64=/tmp/wine64-build --prefix=/tmp/wine-install
           make -j$(nproc)
+          make install DESTDIR=/tmp/wine-binaries  # Force the binary installation location
 
       - name: Package WoW64 Wine build
         run: |
           cd wine
-          tar -czvf wine-wow64.tar.gz -C build64 .
+          tar -czvf wine-wow64.tar.gz -C /tmp/wine-binaries .
 
       - name: Upload Binaries to Actions Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: wine-wow64
-          path: wine/wine-wow64.tar.gz
+          path: /tmp/wine-binaries/wine-wow64.tar.gz
