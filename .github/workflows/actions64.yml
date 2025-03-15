@@ -75,13 +75,9 @@ jobs:
             libfreetype6-dev:i386 \
             libncurses5-dev:i386
 
-      - name: Clone Wine repository (affinity-photo2-wine10.3 branch)
+      - name: Clone Wine repository
         run: |
-          git clone --branch affinity-photo2-wine10.3 --single-branch https://gitlab.winehq.org/ElementalWarrior/wine.git
-
-      - name: Clone Wine64 repository (or checkout correct Wine64 build)
-        run: |
-          git clone --branch master --single-branch https://gitlab.winehq.org/ElementalWarrior/wine.git /tmp/wine64-build
+          git clone --branch affinity-photo2-wine10.3 --single-branch https://gitlab.winehq.org/ElementalWarrior/wine.git /tmp/wine64-build
 
       - name: Build WoW64 Wine
         run: |
