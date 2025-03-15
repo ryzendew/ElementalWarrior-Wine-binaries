@@ -79,10 +79,18 @@ jobs:
         run: |
           git clone --branch affinity-photo2-wine10.3 --single-branch https://gitlab.winehq.org/ElementalWarrior/wine.git /tmp/wine64-build
 
-      - name: Build WoW64 Wine
+      - name: Build Wine64
         run: |
           cd /tmp/wine64-build
           mkdir -p build64 && cd build64
+          PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --enable-archs=x86_64 --prefix=/tmp/wine-install
+          make -j$(nproc)
+          make install DESTDIR=/tmp/wine64-binaries
+
+      - name: Build WoW64 Wine
+        run: |
+          cd /tmp/wine64-build
+          mkdir -p build32 && cd build32
           PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --enable-archs=x86_64 --with-wine64=/tmp/wine64-build --prefix=/tmp/wine-install
           make -j$(nproc)
           make install DESTDIR=/tmp/wine-binaries  # Force the binary installation location
