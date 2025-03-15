@@ -85,7 +85,7 @@ jobs:
             libsane-dev \
             libusb-1.0-0-dev \
             libsdl2-dev \
-            libavutil-dev \ 
+            libswscale-dev \ 
             opencl-headers \
             ocl-icd-opencl-dev \
             p7zip-full
