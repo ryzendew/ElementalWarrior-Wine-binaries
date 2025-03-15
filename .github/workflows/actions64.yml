@@ -6,6 +6,11 @@ on:
       - main
   workflow_dispatch:
 
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
 jobs:
   build:
     runs-on: ubuntu-latest
