@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3  # Downgrade to v3 if v4 is causing issues
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -92,7 +92,7 @@ jobs:
           tar -czvf wine-wow64.tar.gz -C build64 .
 
       - name: Upload Binaries to Actions Artifacts
-        uses: actions/upload-artifact@v3  # Downgrade to v3 if v2 causes issues
+        uses: actions/upload-artifact@v2
         with:
           name: wine-wow64
           path: wine/wine-wow64.tar.gz
