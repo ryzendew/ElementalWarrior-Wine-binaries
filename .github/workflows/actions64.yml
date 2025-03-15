@@ -75,7 +75,7 @@ jobs:
             libfreetype6-dev:i386 \
             libncurses5-dev:i386
 
-      - name: Clone Wine repository (affinity-photo2-wine10.3 branch)
+      - name: Clone ElementalWarriorWine
         run: |
           git clone --branch affinity-photo2-wine10.3 --single-branch https://gitlab.winehq.org/ElementalWarrior/wine.git
 
@@ -91,14 +91,8 @@ jobs:
           cd wine
           tar -czvf wine-wow64.tar.gz -C build64 .
 
-      - name: Create a Git tag
-        run: |
-          git tag v10.4
-          git push origin v10.4
-
-      - name: Create Release and Upload Binaries
-        uses: softprops/action-gh-release@v2
+      - name: Upload Binaries to Actions Artifacts
+        uses: actions/upload-artifact@v3
         with:
-          files: wine/wine-wow64.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: wine-wow64
+          path: wine/wine-wow64.tar.gz
