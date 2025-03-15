@@ -92,7 +92,7 @@ jobs:
           tar -czvf wine-wow64.tar.gz -C build64 .
 
       - name: Upload Binaries to Actions Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wine-wow64
           path: wine/wine-wow64.tar.gz
