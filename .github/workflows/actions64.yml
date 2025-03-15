@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3  # Downgrade to v3 if v4 is causing issues
 
       - name: Install dependencies
         run: |
@@ -75,7 +75,7 @@ jobs:
             libfreetype6-dev:i386 \
             libncurses5-dev:i386
 
-      - name: Clone ElementalWarriorWine
+      - name: Clone Wine repository (affinity-photo2-wine10.3 branch)
         run: |
           git clone --branch affinity-photo2-wine10.3 --single-branch https://gitlab.winehq.org/ElementalWarrior/wine.git
 
@@ -92,7 +92,7 @@ jobs:
           tar -czvf wine-wow64.tar.gz -C build64 .
 
       - name: Upload Binaries to Actions Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3  # Downgrade to v3 if v2 causes issues
         with:
           name: wine-wow64
           path: wine/wine-wow64.tar.gz
