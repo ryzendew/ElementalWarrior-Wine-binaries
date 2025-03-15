@@ -73,7 +73,16 @@ jobs:
             libc6-dev-i386 \
             libx11-dev:i386 \
             libfreetype6-dev:i386 \
-            libncurses5-dev:i386
+            libncurses5-dev:i386 \
+            libxxf86vm-dev \
+            libosmesa6-dev \
+            libpcsclite-dev \
+            libsane-dev \
+            libusb-1.0-0-dev \
+            libffmpeg-dev \
+            libsdl2-dev \
+            libnetapi-dev \
+            liboss4-dev
 
       - name: Clone Wine repository
         run: |
@@ -87,21 +96,13 @@ jobs:
           make -j$(nproc)
           make install DESTDIR=/tmp/wine64-binaries
 
-      - name: Build WoW64 Wine
+      - name: Package Wine64 build
         run: |
-          cd /tmp/wine64-build
-          mkdir -p build32 && cd build32
-          PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --enable-archs=x86_64 --with-wine64=/tmp/wine64-build --prefix=/tmp/wine-install
-          make -j$(nproc)
-          make install DESTDIR=/tmp/wine-binaries  # Force the binary installation location
-
-      - name: Package WoW64 Wine build
-        run: |
-          cd /tmp/wine-binaries
-          tar -czvf wine-wow64.tar.gz -C /tmp/wine-binaries .
+          cd /tmp/wine64-binaries
+          tar -czvf wine64.tar.gz -C /tmp/wine64-binaries .
 
       - name: Upload Binaries to Actions Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: wine-wow64
-          path: /tmp/wine-binaries/wine-wow64.tar.gz
+          name: wine64
+          path: /tmp/wine64-binaries/wine64.tar.gz
