@@ -87,6 +87,7 @@ jobs:
             libsdl2-dev \
             oss4-base \
             oss4-dev \
+            libsmbclient-dev \
             opencl-headers \
             ocl-icd-opencl-dev \
             p7zip-full
