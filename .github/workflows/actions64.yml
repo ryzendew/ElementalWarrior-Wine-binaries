@@ -86,8 +86,14 @@ jobs:
           PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --enable-archs=x86_64
           make -j$(nproc)
 
-      - name: Upload WoW64 Wine build artifact
-        uses: actions/upload-artifact@v4
+      - name: Package WoW64 Wine build
+        run: |
+          cd wine
+          tar -czvf wine-wow64.tar.gz -C build64 .
+
+      - name: Create Release and Upload Binaries
+        uses: softprops/action-gh-release@v2
         with:
-          name: wine-wow64-build
-          path: wine/build64
+          files: wine/wine-wow64.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
