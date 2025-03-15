@@ -85,6 +85,13 @@ jobs:
             libsane-dev \
             libusb-1.0-0-dev \
             libsdl2-dev \
+            libavcodec-dev \ 
+            libavformat-dev \ 
+            libavutil-dev \ 
+            libswscale-dev \
+            oss4-base \ 
+            oss4-dev \ 
+            libsmbclient-dev \
             opencl-headers \
             ocl-icd-opencl-dev \
             p7zip-full
