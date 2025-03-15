@@ -91,6 +91,11 @@ jobs:
           cd wine
           tar -czvf wine-wow64.tar.gz -C build64 .
 
+      - name: Create a Git tag
+        run: |
+          git tag v10.4
+          git push origin v10.4
+
       - name: Create Release and Upload Binaries
         uses: softprops/action-gh-release@v2
         with:
