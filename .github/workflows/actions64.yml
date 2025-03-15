@@ -81,7 +81,7 @@ jobs:
 
       - name: Build WoW64 Wine
         run: |
-          cd wine
+          cd /tmp/wine64-build
           mkdir -p build64 && cd build64
           PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --enable-archs=x86_64 --with-wine64=/tmp/wine64-build --prefix=/tmp/wine-install
           make -j$(nproc)
@@ -89,7 +89,7 @@ jobs:
 
       - name: Package WoW64 Wine build
         run: |
-          cd wine
+          cd /tmp/wine-binaries
           tar -czvf wine-wow64.tar.gz -C /tmp/wine-binaries .
 
       - name: Upload Binaries to Actions Artifacts
