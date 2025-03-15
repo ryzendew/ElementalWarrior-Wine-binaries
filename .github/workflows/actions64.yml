@@ -79,10 +79,7 @@ jobs:
             libpcsclite-dev \
             libsane-dev \
             libusb-1.0-0-dev \
-            libffmpeg-dev \
             libsdl2-dev \
-            libnetapi-dev \
-            liboss4-dev
 
       - name: Clone Wine repository
         run: |
