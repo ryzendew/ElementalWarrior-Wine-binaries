@@ -79,7 +79,8 @@ jobs:
             libpcsclite-dev \
             libsane-dev \
             libusb-1.0-0-dev \
-            libsdl2-dev
+            libsdl2-dev \
+            p7zip-full
 
       - name: Clone Wine repository
         run: |
@@ -96,10 +97,10 @@ jobs:
       - name: Package Wine64 build
         run: |
           cd /tmp/wine64-binaries
-          tar --warning=no-file-changed -czvf wine64.tar.gz -C /tmp/wine64-binaries .
+          7z a /tmp/wine64-binaries/wine64.7z /tmp/wine64-binaries/*
 
       - name: Upload Binaries to Actions Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: wine64
-          path: /tmp/wine64-binaries/wine64.tar.gz
+          path: /tmp/wine64-binaries/wine64.7z
