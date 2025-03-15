@@ -68,6 +68,8 @@ jobs:
             libgettextpo-dev \
             gettext \
             libwayland-bin \
+            libwayland-dev \
+            libxkbcommon-dev \
             gcc-multilib \
             g++-multilib \
             libc6-dev-i386 \
@@ -90,7 +92,7 @@ jobs:
         run: |
           cd /tmp/wine64-build
           mkdir -p build64 && cd build64
-          PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --enable-archs=x86_64 --prefix=/tmp/wine-install
+          PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig ../configure --enable-archs=x86_64 --prefix=/tmp/wine-install --with-wayland
           make -j$(nproc)
           make install DESTDIR=/tmp/wine64-binaries
 
