@@ -33,6 +33,7 @@ jobs:
             libxcursor-dev \
             libxinerama-dev \
             libxkbcommon-dev \
+            libxkbcommon-dev:i386 \
             libxdamage-dev \
             libxcomposite-dev \
             libxshmfence-dev \
@@ -69,7 +70,7 @@ jobs:
             gettext \
             libwayland-bin \
             libwayland-dev \
-            libxkbcommon-dev \
+            libwayland-dev:i386 \
             gcc-multilib \
             g++-multilib \
             libc6-dev-i386 \
