@@ -287,59 +287,6 @@ static void test_IBufferStatics(void)
     RoUninitialize();
 }
 
-static HRESULT (WINAPI *pRoResolveNamespace)(HSTRING name, HSTRING windowsMetaDataDir,
-                                  DWORD packageGraphDirsCount, const HSTRING *packageGraphDirs,
-                                  DWORD *metaDataFilePathsCount, HSTRING **metaDataFilePaths,
-                                  DWORD *subNamespacesCount, HSTRING **subNamespaces);
-
-static void test_RoResolveNamespace(void) {
-    HSTRING name, windowsMetaDataDir, *metaDataFilePaths, *subNamespaces;
-    DWORD metaDataFilePathsCount, subNamespacesCount;
-    HRESULT hr;
-
-    HMODULE hmod = LoadLibraryA("wintypes.dll");
-    if(hmod == NULL) {
-        skip("Failed to load wintypes.dll\n");
-        return;
-    }
-    pRoResolveNamespace = (void*)GetProcAddress(hmod, "RoResolveNamespace");
-    if(pRoResolveNamespace == NULL) {
-        skip("Failed to get DllGetClassObject\n");
-        return;
-    }
-
-    hr = WindowsCreateString( L"Windows.Services.Store", ARRAY_SIZE(L"Windows.Services.Store") - 1, &name );
-    ok(hr == S_OK, "Could not allocate HSTRING for name, hr %#lx.\n", hr);
-    wprintf(L"Testing %s\n", WindowsGetStringRawBuffer(name, 0));
-    hr = WindowsCreateString( L"", ARRAY_SIZE(L"") - 1, &windowsMetaDataDir );
-    ok(hr == S_OK, "Could not allocate HSTRING for windowsMetaDataDir, hr %#lx.\n", hr);
-    pRoResolveNamespace(name, windowsMetaDataDir,
-        0, NULL,
-        &metaDataFilePathsCount, &metaDataFilePaths,
-        &subNamespacesCount, &subNamespaces);
-
-    if (subNamespacesCount != 0)
-    {
-        wprintf(L"\nsub namespaces %d count:\n", subNamespacesCount);
-
-        for (DWORD i = 0; i < subNamespacesCount; i++)
-        {
-            wprintf(L"Subnamespace %d: %s\n", i, WindowsGetStringRawBuffer(subNamespaces[i], 0));
-        }
-    }
-
-    if (metaDataFilePathsCount != 0)
-    {
-        wprintf(L"\nmetaDataFilePathsCount %d\n", metaDataFilePathsCount);
-
-        for (DWORD i = 0; i < metaDataFilePathsCount; i++)
-        {
-            wprintf(L"Metadata file path %d: %s\n", i, WindowsGetStringRawBuffer(metaDataFilePaths[i], 0));
-        }
-        wprintf(L"\n");
-    }
-}
-
 static void test_IApiInformationStatics(void)
 {
     static const struct
@@ -398,7 +345,6 @@ static void test_IApiInformationStatics(void)
     ok(tmp_agile_object == agile_object, "QueryInterface IID_IAgileObject returned %p, expected %p.\n",
             tmp_agile_object, agile_object);
     IAgileObject_Release(tmp_agile_object);
-    IAgileObject_Release(agile_object);
 
     /* IsTypePresent() */
     hr = WindowsCreateString(L"Windows.Foundation.FoundationContract",
@@ -1062,6 +1008,63 @@ static void test_IPropertyValueStatics(void)
     RoUninitialize();
 }
 
+static void test_RoResolveNamespace(void)
+{
+    static const WCHAR foundation[] = L"c:\\windows\\system32\\winmetadata\\windows.foundation.winmd";
+    static const WCHAR foundation_wow64[] = L"c:\\windows\\sysnative\\winmetadata\\windows.foundation.winmd";
+    static const WCHAR networking[] = L"c:\\windows\\system32\\winmetadata\\windows.networking.winmd";
+    static const WCHAR networking_wow64[] = L"c:\\windows\\sysnative\\winmetadata\\windows.networking.winmd";
+    HSTRING name, *paths;
+    DWORD count, i;
+    HRESULT hr;
+    static const struct
+    {
+        const WCHAR *namespace;
+        DWORD        len_namespace;
+        const WCHAR *path;
+        const WCHAR *path_wow64;
+    }
+    tests[] =
+    {
+        { L"Windows.Networking.Connectivity", ARRAY_SIZE(L"Windows.Networking.Connectivity") - 1,
+          networking, networking_wow64 },
+        { L"Windows.Foundation", ARRAY_SIZE(L"Windows.Foundation") - 1,
+          foundation, foundation_wow64 },
+    };
+
+    hr = RoInitialize(RO_INIT_MULTITHREADED);
+    ok(hr == S_OK, "got %#lx\n", hr);
+
+    for (i = 0; i < ARRAY_SIZE(tests); i++)
+    {
+        winetest_push_context("%lu: ", i);
+        hr = WindowsCreateString(tests[i].namespace, tests[i].len_namespace, &name);
+        ok(hr == S_OK, "got %#lx\n", hr);
+
+        count = 0;
+        hr = RoResolveNamespace(name, NULL, 0, NULL, &count, &paths, 0, NULL);
+        todo_wine ok(hr == S_OK, "got %#lx\n", hr);
+        if (hr == S_OK)
+        {
+            const WCHAR *str = WindowsGetStringRawBuffer(paths[0], NULL);
+
+            ok(count == 1, "got %lu\n", count);
+            ok((!is_wow64 && !wcsicmp( str, tests[i].path )) ||
+               (is_wow64 && !wcsicmp( str, tests[i].path_wow64 )) ||
+               broken(is_wow64 && !wcsicmp( str, tests[i].path )) /* win8, win10 1507 */,
+               "got %s\n", wine_dbgstr_w(str) );
+
+            WindowsDeleteString(paths[0]);
+            CoTaskMemFree(paths);
+        }
+
+        WindowsDeleteString(name);
+        winetest_pop_context();
+    }
+
+    RoUninitialize();
+}
+
 static void test_RoParseTypeName(void)
 {
     static const struct
@@ -1214,8 +1217,9 @@ START_TEST(wintypes)
     IsWow64Process(GetCurrentProcess(), &is_wow64);
 
     test_interfaces();
-    test_RoResolveNamespace();
+    test_IApiInformationStatics();
     test_IBufferStatics();
     test_IPropertyValueStatics();
     test_RoParseTypeName();
+    test_RoResolveNamespace();
 }
